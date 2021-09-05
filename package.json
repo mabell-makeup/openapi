@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "mock": "prism mock mabell-api.yaml"
+  },
+  "devDependencies": {
+    "@stoplight/prism-cli": "^4.3.4"
+  }
+}
