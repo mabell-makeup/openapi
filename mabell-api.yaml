@@ -1,0 +1,1125 @@
+openapi: 3.1.0
+info:
+  title: mabell-api
+  version: '1.0'
+  summary: mabellのバックエンドプロジェクトです
+  description: API Gateway + Lambda(Python)で構成されます。
+  termsOfService: 'https://www.mabell.in/terms-of-use'
+  contact:
+    name: mabell運営事務局
+    email: mabell.contact@gmail.com
+servers:
+  - url: 'http://localhost:3000'
+paths:
+  /users:
+    post:
+      summary: ユーザー作成(登録)
+      operationId: post-users
+      responses:
+        '200':
+          description: 作成したユーザー情報を返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+              examples:
+                New User Bob Fellow:
+                  value:
+                    id: 12
+                    firstName: Bob
+                    lastName: Fellow
+                    email: bob.fellow@gmail.com
+                    dateOfBirth: '1996-08-24'
+                    emailVerified: false
+                    createDate: '2020-11-18'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: ユーザー名(@のあとにくるもの)
+                nickname:
+                  type: string
+                  description: 表示名
+                birthdate:
+                  type: string
+                  format: date
+                thumbnail_img:
+                  type: string
+                gender:
+                  type: number
+                base_color:
+                  type: number
+                season:
+                  type: number
+                skin_type:
+                  type: number
+                face_type:
+                  type: number
+                self_introduction:
+                  type: number
+                country:
+                  type: number
+              required:
+                - name
+            examples: {}
+        description: ''
+      description: ''
+    parameters: []
+    get:
+      summary: ユーザー検索
+      operationId: get-users
+      responses:
+        '200':
+          description: 条件に当てはまるユーザーを20件ずつ返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  count:
+                    type: number
+                  next_token:
+                    type: string
+      description: ''
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: gender
+        - schema:
+            type: string
+          in: query
+          name: base_color
+        - schema:
+            type: string
+          in: query
+          name: face_type
+        - schema:
+            type: string
+          in: query
+          name: base_color
+        - schema:
+            type: string
+          in: query
+          name: season
+        - schema:
+            type: string
+          in: query
+          name: country
+        - schema:
+            type: string
+          in: query
+          name: skin_type
+        - schema:
+            type: string
+          in: query
+          name: order_by
+        - schema:
+            type: string
+          in: query
+          name: next_token
+  '/users/{user_id}':
+    parameters:
+      - schema:
+          type: string
+        name: user_id
+        in: path
+        required: true
+    get:
+      summary: ユーザー情報取得
+      tags: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+      operationId: get-user-user_id
+      description: ''
+    patch:
+      summary: ユーザー情報変更
+      operationId: patch-users-user_id
+      responses:
+        '200':
+          description: 変更したユーザーの情報を返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: ユーザー名(@のあとにくるもの)
+                nickname:
+                  type: string
+                  description: 表示名
+                birthdate:
+                  type: string
+                  format: date
+                thumbnail_img:
+                  type: string
+                gender:
+                  type: number
+                base_color:
+                  type: number
+                season:
+                  type: number
+                skin_type:
+                  type: number
+                face_type:
+                  type: number
+                self_introduction:
+                  type: number
+                country:
+                  type: number
+              required:
+                - name
+        description: ''
+    delete:
+      summary: ユーザー情報削除
+      operationId: delete-users-user_id
+      responses:
+        '200':
+          description: 削除の結果を返却する
+          content:
+            application/json:
+              schema:
+                type: string
+                description: OKという文字列を返す
+              examples:
+                削除成功時のレスポンス:
+                  value: OK
+      description: ''
+  '/users/{user_id}/posts':
+    get:
+      summary: 投稿一覧取得
+      tags: []
+      responses:
+        '200':
+          description: ユーザーの投稿一覧を20件ずつ返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    $ref: '#/components/schemas/Post'
+                  count:
+                    type: number
+                    description: 検索条件にヒットした件数
+                  next_token:
+                    type: string
+                    description: 次の20件を取得するトークン
+        '404':
+          description: User Not Found
+          content:
+            application/json:
+              schema:
+                $ref: ''
+      operationId: posts-user_id
+      description: ''
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: next_token
+    parameters:
+      - schema:
+          type: string
+        name: user_id
+        in: path
+        required: true
+    post:
+      summary: 投稿作成
+      operationId: post-users-user_id-posts
+      responses:
+        '200':
+          description: 作成後のユーザーの投稿一覧を20件ずつ返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+                  count:
+                    type: number
+                  next_token:
+                    type: string
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                base_color:
+                  type: number
+                description:
+                  type: string
+                gender:
+                  type: number
+                img_list:
+                  type: array
+                  items:
+                    type: string
+                products:
+                  type: array
+                  items:
+                    type: number
+                    format: uuid
+                skin_type:
+                  type: number
+                tags:
+                  type: array
+                  items:
+                    type: string
+                thumbnail_img:
+                  type: string
+                face_type:
+                  type: number
+                makeup_categories:
+                  type: number
+                season:
+                  type: number
+                glitter:
+                  type: number
+                country:
+                  type: number
+                color:
+                  type: number
+              required:
+                - description
+                - img_list
+                - thumbnail_img
+                - makeup_categories
+                - country
+                - color
+  '/users/{user_id}/posts/{post_id}':
+    parameters:
+      - schema:
+          type: string
+        name: user_id
+        in: path
+        required: true
+      - schema:
+          type: string
+        name: post_id
+        in: path
+        required: true
+    patch:
+      summary: 投稿内容変更
+      operationId: patch-users-user_id-posts-post_id
+      responses:
+        '200':
+          description: 変更後の投稿詳細を返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post:
+                    $ref: '#/components/schemas/Post'
+              examples:
+                Updated User Rebecca Baker:
+                  value:
+                    id: 13
+                    firstName: Rebecca
+                    lastName: Baker
+                    email: rebecca@gmail.com
+                    dateOfBirth: '1985-10-02'
+                    emailVerified: false
+                    createDate: '2019-08-24'
+        '404':
+          description: User Not Found
+        '409':
+          description: Email Already Taken
+      description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                base_color:
+                  type: number
+                description:
+                  type: string
+                gender:
+                  type: number
+                img_list:
+                  type: array
+                  items:
+                    type: string
+                products:
+                  type: array
+                  items:
+                    type: number
+                    format: uuid
+                skin_type:
+                  type: number
+                tags:
+                  type: array
+                  items:
+                    type: string
+                thumbnail_img:
+                  type: string
+                face_type:
+                  type: number
+                makeup_categories:
+                  type: number
+                season:
+                  type: number
+                glitter:
+                  type: number
+                country:
+                  type: number
+                color:
+                  type: number
+              required:
+                - description
+                - img_list
+                - thumbnail_img
+                - makeup_categories
+                - country
+                - color
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+        description: ''
+      parameters: []
+    delete:
+      summary: ユーザー情報削除
+      operationId: delete-users-user_id-posts-post_id
+      responses:
+        '200':
+          description: 削除の結果を返却する
+          content:
+            application/json:
+              schema:
+                type: string
+                description: OKという文字列を返す
+              examples:
+                削除成功時のレスポンス:
+                  value: OK
+      description: ''
+    get:
+      summary: 投稿詳細取得
+      operationId: get-users-user_id-posts-post_id
+      responses:
+        '200':
+          description: 投稿詳細を返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  post:
+                    $ref: '#/components/schemas/Post'
+  /search:
+    parameters: []
+    get:
+      summary: 投稿の検索
+      tags: []
+      responses:
+        '200':
+          description: 検索条件にヒットした投稿を20件ずつ返す
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    $ref: '#/components/schemas/Post'
+                  count:
+                    type: number
+                    description: 検索条件にヒットした件数
+                  next_token:
+                    type: string
+                    description: 次の20件を取得するトークン
+        '404':
+          description: User Not Found
+          content:
+            application/json:
+              schema:
+                $ref: ''
+      operationId: get-search
+      description: ''
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: tag
+        - schema:
+            type: number
+          in: query
+          name: base_color
+        - schema:
+            type: number
+          in: query
+          name: gender
+        - schema:
+            type: number
+          in: query
+          name: product_id
+        - schema:
+            type: number
+          in: query
+          name: skin_type
+        - schema:
+            type: number
+          in: query
+          name: face_type
+        - schema:
+            type: number
+          in: query
+          name: makeup_category
+        - schema:
+            type: number
+          in: query
+          name: season
+        - schema:
+            type: number
+          in: query
+          name: glitter
+        - schema:
+            type: number
+          in: query
+          name: country
+        - schema:
+            type: number
+          in: query
+          name: color
+        - schema:
+            type: string
+          in: query
+          name: order_by
+        - schema:
+            type: string
+          in: query
+          name: next_token
+  /master:
+    get:
+      summary: マスターデータ取得
+      tags: []
+      responses:
+        '200':
+          description: マスターデータを返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  master:
+                    $ref: '#/components/schemas/Master'
+      operationId: get-masterdata
+    parameters: []
+  /tags:
+    get:
+      summary: タグ検索
+      tags: []
+      responses: {}
+      operationId: get-tags
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Tag'
+                count:
+                  type: number
+                  description: 検索条件にヒットした件数
+                next_token:
+                  type: string
+                  description: 次の20件を取得するトークン
+        description: 部分一致でヒットしたタグ一覧を20件ずつ返却する
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: q
+          description: タグ検索のキーワード
+        - schema:
+            type: string
+          in: query
+          name: order_by
+        - schema:
+            type: string
+          in: query
+          name: next_token
+    post:
+      summary: タグ作成
+      operationId: post-tags
+      responses:
+        '200':
+          description: 作成の結果を返却する
+          content:
+            application/json:
+              schema:
+                type: string
+                description: OKという文字列を返す
+              examples:
+                作成成功時のレスポンス:
+                  value: OK
+      description: ''
+  /products:
+    get:
+      summary: 商品検索
+      tags: []
+      responses: {}
+      operationId: get-products
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Product'
+                count:
+                  type: number
+                  description: 検索条件にヒットした件数
+                next_token:
+                  type: string
+                  description: 次の20件を取得するトークン
+          application/xml:
+            schema:
+              type: object
+              properties: {}
+        description: 部分一致でヒットした商品一覧を20件ずつ返却する
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: q
+          description: 商品検索のキーワード
+        - schema:
+            type: string
+          in: query
+          name: next_token
+  '/products/{product_id}':
+    parameters:
+      - schema:
+          type: string
+        name: product_id
+        in: path
+        required: true
+    get:
+      summary: 商品詳細取得
+      tags: []
+      responses:
+        '200':
+          description: 商品詳細を返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  product:
+                    $ref: '#/components/schemas/Product'
+      operationId: get-products-product_id
+      description: ''
+  '/users/{user_id}/block':
+    parameters:
+      - schema:
+          type: string
+        name: user_id
+        in: path
+        required: true
+    get:
+      summary: ブロックしたユーザー一覧取得
+      tags: []
+      responses:
+        '200':
+          description: ブロックしたユーザーの一覧を返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+      operationId: get-users-user_id-block
+    patch:
+      summary: ブロックしたユーザー一覧変更
+      operationId: patch-users-user_id-block
+      responses:
+        '200':
+          description: 変更後のブロックしたユーザー一覧を返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: string
+                  description: ブロック対象のユーザーID
+      description: 指定したユーザーIDが既にブロックリストにあれば削除、なければ追加する
+  '/users/{user_id}/save':
+    parameters:
+      - schema:
+          type: string
+        name: user_id
+        in: path
+        required: true
+    get:
+      summary: 保存済み投稿一覧取得
+      tags: []
+      responses:
+        '200':
+          description: 保存済みの投稿一覧を20件ずつ返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+                  count:
+                    type: number
+                  next_token:
+                    type: string
+      operationId: get-users-user_id-save
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                next_token:
+                  type: string
+      description: ''
+    patch:
+      summary: 保存済み投稿一覧変更
+      operationId: patch-users-user_id-save
+      responses:
+        '200':
+          description: 変更後の保存済み投稿一覧を20件返却する(続きはGETで取得する)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+                  count:
+                    type: number
+                  next_token:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                post_id:
+                  type: string
+                  description: 保存対象の投稿ID
+      description: 指定した投稿IDが既に保存済みリストにあれば削除、なければ追加する
+  '/users/{user_id}/like':
+    parameters:
+      - schema:
+          type: string
+        name: user_id
+        in: path
+        required: true
+    get:
+      summary: いいね済み投稿一覧取得
+      tags: []
+      responses:
+        '200':
+          description: いいね済みの投稿一覧を20件ずつ返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+                  count:
+                    type: number
+                  next_token:
+                    type: string
+      operationId: get-users-user_id-like
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                next_token:
+                  type: string
+    patch:
+      summary: いいね済み投稿一覧変更
+      operationId: patch-users-user_id-like
+      responses:
+        '200':
+          description: 変更後のいいね済み投稿一覧を20件返却する(続きはGETで取得する)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+                  count:
+                    type: number
+                  next_token:
+                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                post_id:
+                  type: string
+                  description: いいね対象の投稿ID
+      description: 指定した投稿IDが既にいいね済みリストにあれば削除、なければ追加する
+components:
+  schemas:
+    Master:
+      title: Master
+      type: object
+      description: マスターデータを管理する
+      examples:
+        - base_color:
+            '0': イエベ
+            '1': ブルベ
+          color:
+            '0': '#EF0001(レッド)'
+            '1': '#FCA001(オレンジ)'
+            '2': '#FEF500(イエロー)'
+            '3': '#009824(グリーン)'
+            '4': '#0772B6(ブルー)'
+            '5': '#A1007E(パープル)'
+            '6': '#DDBB99(ライトブラウン)'
+            '7': '#693A2F(ダークブラウン)'
+            '8': '#C1AB05(ゴールド)'
+            '9': '#C0C0C0(シルバー)'
+            '10': '#000000(ブラック)'
+          country:
+            '0': 日本
+            '1': 韓国
+            '2': 中国
+            '3': 欧米
+            '4': その他
+          face_type:
+            '0': 卵型
+            '1': 丸顔
+            '2': 面長
+            '3': ベース型
+            '4': 逆三角形
+          gender:
+            '0': MEN
+            '1': WOMEN
+          glitter:
+            '0': ラメなし
+            '1': ラメあり
+          id: '0'
+          makeup_categories:
+            '0': 下地
+            '1': ファンデ
+            '2': フェイスパウダー
+            '3': アイブロウ
+            '4': アイシャドウ
+            '5': アイライン
+            '6': マスカラ
+            '7': リップ
+            '8': チーク
+            '9': ハイライト
+            '10': シェーディング
+          season:
+            '0': 春
+            '1': 夏
+            '2': 秋
+            '3': 冬
+          skin_type:
+            '0': 普通肌
+            '1': 脂性肌
+            '2': 乾燥肌
+            '3': 混合肌
+      x-internal: false
+      properties:
+        base_color:
+          description: Unique identifier for the given user.
+          type: object
+        color:
+          type: object
+        country:
+          type: object
+        face_type:
+          type: object
+        gender:
+          type: object
+        glitter:
+          type: object
+        id:
+          type: string
+        makeup_categories:
+          type: object
+        season:
+          type: object
+        skin_type:
+          type: object
+      required:
+        - base_color
+        - color
+    PostLike:
+      title: PostLike
+      type: object
+      description: 投稿に対する「いいね」を管理する
+      examples:
+        - like_id: fff976b2-0b53-4f48-9577-204b102204c0
+          datetime: '2019-08-24T14:15:22Z'
+          post_id: dd3504b4-6e8d-47e2-aab1-573a0c9d6149
+          user_id: a169451c-8525-4352-b8ca-070dd449a1a5
+      properties:
+        like_id:
+          type: string
+          format: uuid
+          description: 削除するときのために「post_id + user_id」がいい？？
+        datetime:
+          type: string
+          format: date-time
+        post_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+    Post:
+      title: Post
+      type: object
+      examples:
+        - post_id: dd3504b4-6e8d-47e2-aab1-573a0c9d6149
+          datetime: '2019-08-24T14:15:22Z'
+          base_color: 0
+          description: "☑︎Seria MMコントロールカラーA\n\n・ベールピンク\n・ピュアミント\n・ソフトラベンダー\n\n肌印象をコントロール！色補正下地✨\nパケにつられて購入しました♡\n\n塗り心地が滑らかでとにかくのびるのびる\U0001F440\n付けすぎ注意ですよ⚠︎\n\nそれぞれカラー紹介⤵︎ ⤵︎\n\n【ベールピンク】\nくすみをカバーして血色感をプラス！\nピンク色のカラー下地です♡"
+          gender: 0
+          img_list:
+            - 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
+            - 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
+          products:
+            - 0
+            - 1
+            - 2
+          skin_type: 0
+          tags:
+            - ティント
+            - アイブロウ
+            - アイメイク
+          thumbnail_img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
+          user_id: a169451c-8525-4352-b8ca-070dd449a1a5
+          face_type: 0
+          makeup_categories: 0
+          season: 0
+          glitter: 0
+          country: 0
+          color: 0
+      properties:
+        post_id:
+          type: string
+          format: uuid
+        datetime:
+          type: string
+          format: date-time
+        base_color:
+          type: number
+        description:
+          type: string
+        gender:
+          type: number
+        img_list:
+          type: array
+          items:
+            type: string
+        products:
+          type: array
+          items:
+            type: number
+            format: uuid
+        skin_type:
+          type: number
+        tags:
+          type: array
+          items:
+            type: string
+        thumbnail_img:
+          type: string
+        user_id:
+          type: string
+          format: uuid
+        face_type:
+          type: number
+        makeup_categories:
+          type: number
+        season:
+          type: number
+        glitter:
+          type: number
+        country:
+          type: number
+        color:
+          type: number
+    PostView:
+      title: PostView
+      type: object
+      examples:
+        - view_id: 51ee3349-7269-4d2c-8a79-ea7055ee54f4
+          datetime: '2019-08-24T14:15:22Z'
+          post_id: dd3504b4-6e8d-47e2-aab1-573a0c9d6149
+          user_id: a169451c-8525-4352-b8ca-070dd449a1a5
+      properties:
+        view_id:
+          type: string
+          format: uuid
+          description: 削除するときのために「post_id + user_id」がいい？？
+        datetime:
+          type: string
+          format: date-time
+        post_id:
+          type: string
+          format: uuid
+        user_id:
+          type: string
+          format: uuid
+    Product:
+      title: Product
+      type: object
+      examples:
+        - product_id: 0
+          brand_name: UZU BY FLOWFUSHI
+          product_name: MOTE MASCARA VOL.8
+          price: '5.5g・1,800円'
+          product_categories:
+            - マスカラ
+          release_date: '2019-11-18'
+      properties:
+        product_id:
+          type: number
+        brand_name:
+          type: string
+        product_name:
+          type: string
+        price:
+          type: string
+        product_categories:
+          type: array
+          items:
+            type: string
+        release_date:
+          type: string
+          format: date
+    Tag:
+      title: Tag
+      type: object
+      properties:
+        tag_name:
+          type: string
+        count:
+          type: number
+      examples:
+        - tag_name: CANMAKE
+          count: 100
+    User:
+      title: User
+      type:
+        - object
+        - 'null'
+      examples:
+        - user_id: a169451c-8525-4352-b8ca-070dd449a1a5
+          name: test_user
+          nickname: テストユーザー
+          birthdate: '2019-08-24'
+          thumbnail_img: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='
+          gender: 0
+          base_color: 0
+          season: 0
+          skin_type: 0
+          face_type: 0
+          self_introduction: 0
+      properties:
+        user_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+          description: ユーザー名(@のあとにくるもの)
+        nickname:
+          type: string
+          description: 表示名
+        birthdate:
+          type: string
+          format: date
+        thumbnail_img:
+          type: string
+        gender:
+          type: number
+        base_color:
+          type: number
+        season:
+          type: number
+        skin_type:
+          type: number
+        face_type:
+          type: number
+        self_introduction:
+          type: number
+        country:
+          type: number
+  securitySchemes: {}
+  responses: {}
