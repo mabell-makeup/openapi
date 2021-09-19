@@ -459,7 +459,9 @@ paths:
                 type: object
                 properties:
                   items:
-                    $ref: '#/components/schemas/Post'
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
                   count:
                     type: number
                     description: 検索条件にヒットした件数
