@@ -597,6 +597,14 @@ paths:
                 作成成功時のレスポンス:
                   value: OK
       description: ''
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tag_name:
+                  type: string
   /products:
     get:
       summary: 商品検索
