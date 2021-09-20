@@ -620,13 +620,6 @@ paths:
                     type: string
                     description: 次の20件を取得するトークン
       operationId: get-products
-      requestBody:
-        content:
-          application/xml:
-            schema:
-              type: object
-              properties: {}
-        description: ''
       parameters:
         - schema:
             type: string
