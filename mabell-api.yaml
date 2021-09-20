@@ -549,25 +549,25 @@ paths:
     get:
       summary: タグ検索
       tags: []
-      responses: {}
-      operationId: get-tags
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                items:
-                  type: array
+      responses:
+        '200':
+          description: 部分一致でヒットしたタグ一覧を20件ずつ返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
                   items:
-                    $ref: '#/components/schemas/Tag'
-                count:
-                  type: number
-                  description: 検索条件にヒットした件数
-                next_token:
-                  type: string
-                  description: 次の20件を取得するトークン
-        description: 部分一致でヒットしたタグ一覧を20件ずつ返却する
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Tag'
+                  count:
+                    type: number
+                    description: 検索条件にヒットした件数
+                  next_token:
+                    type: string
+                    description: 次の20件を取得するトークン
+      operationId: get-tags
       parameters:
         - schema:
             type: string
@@ -601,29 +601,32 @@ paths:
     get:
       summary: 商品検索
       tags: []
-      responses: {}
+      responses:
+        '200':
+          description: 部分一致でヒットした商品一覧を20件ずつ返却する
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+                  count:
+                    type: number
+                    description: 検索条件にヒットした件数
+                  next_token:
+                    type: string
+                    description: 次の20件を取得するトークン
       operationId: get-products
       requestBody:
         content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                items:
-                  type: array
-                  items:
-                    $ref: '#/components/schemas/Product'
-                count:
-                  type: number
-                  description: 検索条件にヒットした件数
-                next_token:
-                  type: string
-                  description: 次の20件を取得するトークン
           application/xml:
             schema:
               type: object
               properties: {}
-        description: 部分一致でヒットした商品一覧を20件ずつ返却する
+        description: ''
       parameters:
         - schema:
             type: string
