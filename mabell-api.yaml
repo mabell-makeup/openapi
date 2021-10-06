@@ -926,29 +926,6 @@ components:
       required:
         - base_color
         - color
-    PostLike:
-      title: PostLike
-      type: object
-      description: 投稿に対する「いいね」を管理する
-      examples:
-        - like_id: fff976b2-0b53-4f48-9577-204b102204c0
-          datetime: '2019-08-24T14:15:22Z'
-          post_id: dd3504b4-6e8d-47e2-aab1-573a0c9d6149
-          user_id: a169451c-8525-4352-b8ca-070dd449a1a5
-      properties:
-        like_id:
-          type: string
-          format: uuid
-          description: 削除するときのために「post_id + user_id」がいい？？
-        datetime:
-          type: string
-          format: date-time
-        post_id:
-          type: string
-          format: uuid
-        user_id:
-          type: string
-          format: uuid
     Post:
       title: Post
       type: object
@@ -1022,6 +999,10 @@ components:
         country:
           type: number
         color:
+          type: number
+        save_count:
+          type: number
+        like_count:
           type: number
     PostView:
       title: PostView
@@ -1129,5 +1110,101 @@ components:
           type: number
         country:
           type: number
+        block_users:
+          type: array
+          description: user_idの配列
+          items:
+            type: string
+            format: uuid
+        like_posts:
+          type: array
+          description: post_idの配列
+          items:
+            type: string
+            format: uuid
+        save_posts:
+          type: array
+          description: post_idの配列
+          items:
+            type: string
+            format: uuid
+    PostDetail:
+      title: PostDetail
+      type: object
+      examples:
+        - post_id: dd3504b4-6e8d-47e2-aab1-573a0c9d6149
+          datetime: '2019-08-24T14:15:22Z'
+          base_color: 0
+          description: "☑︎Seria MMコントロールカラーA\n\n・ベールピンク\n・ピュアミント\n・ソフトラベンダー\n\n肌印象をコントロール！色補正下地✨\nパケにつられて購入しました♡\n\n塗り心地が滑らかでとにかくのびるのびる\U0001F440\n付けすぎ注意ですよ⚠︎\n\nそれぞれカラー紹介⤵︎ ⤵︎\n\n【ベールピンク】\nくすみをカバーして血色感をプラス！\nピンク色のカラー下地です♡"
+          gender: 0
+          img_list:
+            - 'https://raw.githubusercontent.com/daiti0113/Joker-assets/main/images/users/user1/posts/1.jpg'
+            - 'https://raw.githubusercontent.com/daiti0113/Joker-assets/main/images/users/user1/posts/2.jpg'
+          products:
+            - 0
+            - 1
+            - 2
+          skin_type: 0
+          tags:
+            - ティント
+            - アイブロウ
+            - アイメイク
+          thumbnail_img: 'https://raw.githubusercontent.com/daiti0113/Joker-assets/main/images/users/user1/posts/1.jpg'
+          user_id: a169451c-8525-4352-b8ca-070dd449a1a5
+          face_type: 0
+          makeup_categories: 0
+          season: 0
+          glitter: 0
+          country: 0
+          color: 0
+      properties:
+        post_id:
+          type: string
+          format: uuid
+        datetime:
+          type: string
+          format: date-time
+        base_color:
+          type: number
+        description:
+          type: string
+        gender:
+          type: number
+        img_list:
+          type: array
+          items:
+            type: string
+        products:
+          type: array
+          items:
+            type: number
+            format: uuid
+        skin_type:
+          type: number
+        tags:
+          type: array
+          items:
+            type: string
+        thumbnail_img:
+          type: string
+        user_id:
+          type: string
+          format: uuid
+        face_type:
+          type: number
+        makeup_categories:
+          type: number
+        season:
+          type: number
+        glitter:
+          type: number
+        country:
+          type: number
+        color:
+          type: number
+        user_name:
+          type: string
+        like_count:
+          type: string
   securitySchemes: {}
   responses: {}
