@@ -735,15 +735,12 @@ paths:
                   next_token:
                     type: string
       operationId: get-users-user_id-save
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                next_token:
-                  type: string
       description: ''
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: next_token
     patch:
       summary: 保存済み投稿一覧変更
       operationId: patch-users-user_id-save
